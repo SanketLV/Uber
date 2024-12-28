@@ -134,3 +134,51 @@ Authentication is handled using JSON Web Tokens (JWT). The process is as follows
 7. **Access Control**: If the token is invalid or blacklisted, a 401 Unauthorized response is returned.
 
 This process ensures that only authenticated users can access protected routes.
+
+## Endpoint: `/captains/register`
+
+- **Method**: `POST`
+
+### Description
+
+This endpoint allows captains to register by providing their email, fullname, password, and vehicle details. Upon successful registration, a captain object and an authentication token are returned.
+
+### Required Data
+
+- `fullname` (object)
+  - `firstname` (string, required): Must be at least 3 characters long.
+  - `lastname` (string, optional): Must be at least 3 characters long.
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Must be at least 6 characters long.
+- `vehicle` (object)
+  - `color` (string, required): Must be at least 3 characters long.
+  - `plate` (string, required): Must be at least 3 characters long.
+  - `capacity` (number, required): Must be a positive integer.
+  - `vehicleType` (string, required): Must be one of the following values: `car`, `motorcycle`, `auto`.
+
+### Response Example
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "XYZ123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  },
+  "token": "generated_auth_token",
+  "message": "Captain created successfully"
+}
+```
+
+### Status Codes
+
+- `201`: Captain created successfully.
+- `400`: Bad request (validation errors or captain already exists).
