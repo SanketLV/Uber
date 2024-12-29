@@ -182,3 +182,97 @@ This endpoint allows captains to register by providing their email, fullname, pa
 
 - `201`: Captain created successfully.
 - `400`: Bad request (validation errors or captain already exists).
+
+## Endpoint: `/captains/login`
+
+- **Method**: `POST`
+
+### Description
+
+Allows captains to log in by providing their email and password. Returns a captain object and an authentication token upon successful login.
+
+### Required Data
+
+- `email`: Must be a valid email address.
+- `password`: Must be at least 6 characters long.
+
+### Response Example
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "XYZ123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  },
+  "token": "generated_auth_token",
+  "message": "Login successful"
+}
+```
+
+### Status Codes
+
+- `200`: Login successful.
+- `401`: Invalid email or password.
+
+## Endpoint: `/captains/profile`
+
+- **Method**: `GET`
+
+### Description
+
+Retrieves the authenticated captain's profile information. Requires authentication.
+
+### Response Example
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "XYZ123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+### Status Codes
+
+- `200`: Profile retrieved successfully.
+- `401`: Unauthorized (authentication required).
+
+## Endpoint: `/captains/logout`
+
+- **Method**: `GET`
+
+### Description
+
+Logs the captain out by clearing the authentication token and adding it to a blacklist.
+
+### Response Example
+
+```json
+{
+  "message": "Captain logged out successfully"
+}
+```
+
+### Status Codes
+
+- `200`: Logout successful.
+- `401`: Unauthorized (authentication required).
