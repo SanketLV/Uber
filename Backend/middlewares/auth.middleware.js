@@ -9,7 +9,7 @@ module.exports.authUser = async (req, res, next) => {
 
   if (!token) {
     return res.status(401).json({
-      message: "Unauthorized",
+      message: "Token not found.",
     });
   }
 
@@ -17,7 +17,7 @@ module.exports.authUser = async (req, res, next) => {
 
   if (isBlacklisted) {
     return res.status(401).json({
-      message: "Unauthorized",
+      message: "Token is black listed.",
     });
   }
 

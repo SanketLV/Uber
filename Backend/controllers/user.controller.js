@@ -80,7 +80,9 @@ module.exports.getUserProfile = async (req, res, next) => {
 module.exports.logoutUser = async (req, res, next) => {
   const token = req.cookies.token || req.headers.authorization.split(" ")[1];
 
-  await BlacklistToken.create({ token });
+  if (token) {
+    await BlacklistToken.create({ token });
+  }
 
   res.clearCookie("token");
 
