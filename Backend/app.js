@@ -13,7 +13,16 @@ const ridesRoutes = require("./routes/ride.routes");
 
 connectToDb();
 
-app.use(cors());
+// CORS configuration
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173", // Vite's default port
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

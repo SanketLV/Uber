@@ -48,6 +48,8 @@ async function getFare(pickup, dropoff) {
   return fare;
 }
 
+module.exports.getFare = getFare;
+
 function getOtp(num) {
   const otp = crypto
     .randomInt(Math.pow(10, num - 1), Math.pow(10, num))

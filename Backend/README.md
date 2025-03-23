@@ -276,3 +276,147 @@ Logs the captain out by clearing the authentication token and adding it to a bla
 
 - `200`: Logout successful.
 - `401`: Unauthorized (authentication required).
+
+## Endpoint: `/rides/create`
+
+- **Method**: `POST`
+
+### Description
+
+Creates a new ride by providing pickup, dropoff, and vehicle type. Requires authentication.
+
+### Required Data
+
+- `pickup` (string, required): Must be at least 3 characters long.
+- `dropoff` (string, required): Must be at least 3 characters long.
+- `vehicleType` (string, required): Must be one of the following values: `car`, `moto`, `auto`.
+
+### Response Example
+
+```json
+{
+  "ride": {
+    "pickup": "Location A",
+    "dropoff": "Location B",
+    "vehicleType": "car",
+    "fare": 50
+  },
+  "message": "Ride created successfully"
+}
+```
+
+### Status Codes
+
+- `201`: Ride created successfully.
+- `400`: Bad request (validation errors).
+
+## Endpoint: `/rides/get-fare`
+
+- **Method**: `GET`
+
+### Description
+
+Retrieves the fare for a ride based on pickup and dropoff locations. Requires authentication.
+
+### Required Data
+
+- `pickup` (string, required): Must be at least 3 characters long.
+- `dropoff` (string, required): Must be at least 3 characters long.
+
+### Response Example
+
+```json
+{
+  "auto": 50.0,
+  "car": 75.0,
+  "moto": 40.0
+}
+```
+
+### Status Codes
+
+- `200`: Fare retrieved successfully.
+- `400`: Bad request (validation errors).
+
+## Endpoint: `/maps/get-coordinate`
+
+- **Method**: `GET`
+
+### Description
+
+Retrieves coordinates for a given address. Requires authentication.
+
+### Required Data
+
+- `address` (string, required): Must be at least 3 characters long.
+
+### Response Example
+
+```json
+{
+  "latitude": 12.9716,
+  "longitude": 77.5946
+}
+```
+
+### Status Codes
+
+- `200`: Coordinates retrieved successfully.
+- `400`: Bad request (validation errors).
+
+## Endpoint: `/maps/get-distance-time`
+
+- **Method**: `GET`
+
+### Description
+
+Retrieves distance and time between origin and destination. Requires authentication.
+
+### Required Data
+
+- `origin` (string, required): Must be at least 3 characters long.
+- `destination` (string, required): Must be at least 3 characters long.
+
+### Response Example
+
+```json
+{
+  "distance": "10 km",
+  "time": "15 mins"
+}
+```
+
+### Status Codes
+
+- `200`: Distance and time retrieved successfully.
+- `400`: Bad request (validation errors).
+
+## Endpoint: `/maps/get-suggestion`
+
+- **Method**: `GET`
+
+### Description
+
+Provides location suggestions based on input. Requires authentication.
+
+### Required Data
+
+- `input` (string, required): Must be at least 3 characters long.
+
+### Response Example
+
+```json
+[
+  {
+    "description": "Location A"
+  },
+  {
+    "description": "Location B"
+  }
+]
+```
+
+### Status Codes
+
+- `200`: Suggestions retrieved successfully.
+- `400`: Bad request (validation errors).

@@ -11,8 +11,6 @@ module.exports.createRide = async (req, res) => {
 
   const { pickup, dropoff, vehicleType } = req.body;
 
-  console.log(req.user);
-
   try {
     const ride = await rideService.createRide({
       user: req.user._id,
@@ -22,6 +20,27 @@ module.exports.createRide = async (req, res) => {
     });
 
     return res.status(201).json(ride);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports.getFare = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      errors: errors.array(),
+    });
+  }
+
+  try {
+    const { pickup, dropoff } = req.query;
+
+    const fare = await rideService.getFare(pickup, dropoff);
+    return res.status(200).json(fare);
   } catch (error) {
     console.error(error);
     res.status(500).json({

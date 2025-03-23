@@ -32,7 +32,7 @@ const VehicleCard = ({
           <h4 className="text-gray-500 text-xs">{description}</h4>
         </div>
         <div className="">
-          <h2 className="font-medium">${price}</h2>
+          <h2 className="font-medium">₹{price}</h2>
         </div>
       </div>
     </div>

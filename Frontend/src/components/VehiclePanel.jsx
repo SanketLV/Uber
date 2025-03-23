@@ -1,6 +1,6 @@
 import VehicleCard from "./VehicleCard";
 
-const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel }) => {
+const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel, fare }) => {
   return (
     <div>
       <h4
@@ -21,7 +21,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel }) => {
         name={"UberGo"}
         description={"Affordable, compact rides"}
         time={"2 mins"}
-        price={20}
+        price={fare.car}
         setConfirmRidePanel={setConfirmRidePanel}
         setVehiclePanel={setVehiclePanel}
       />
@@ -34,12 +34,12 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel }) => {
         name={"Moto"}
         description={"Affordable motorcycle rides"}
         time={"2 mins"}
-        price={12}
+        price={fare.moto}
         setConfirmRidePanel={setConfirmRidePanel}
         setVehiclePanel={setVehiclePanel}
       />
 
-      <VehicleCard
+      {/* <VehicleCard
         img={
           "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_470,w_835/v1657101905/assets/af/2c5369-2dec-4ea6-b67b-fba6e4a01f49/original/hcv_final.png"
         }
@@ -50,7 +50,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel }) => {
         price={30}
         setConfirmRidePanel={setConfirmRidePanel}
         setVehiclePanel={setVehiclePanel}
-      />
+      /> */}
 
       <VehicleCard
         img={
@@ -60,7 +60,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel }) => {
         name={"UberAuto"}
         description={"Affordable Auto rides"}
         time={"3 mins"}
-        price={15}
+        price={fare.auto}
         setConfirmRidePanel={setConfirmRidePanel}
         setVehiclePanel={setVehiclePanel}
       />
