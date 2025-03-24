@@ -7,6 +7,7 @@ const VehicleCard = ({
   price,
   setConfirmRidePanel,
   setVehiclePanel,
+  selectVehicle,
 }) => {
   return (
     <div
@@ -14,6 +15,7 @@ const VehicleCard = ({
       onClick={() => {
         setConfirmRidePanel(true);
         setVehiclePanel(false);
+        selectVehicle(name);
       }}
     >
       <div>

@@ -1,6 +1,11 @@
 import VehicleCard from "./VehicleCard";
 
-const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel, fare }) => {
+const VehiclePanel = ({
+  setVehiclePanel,
+  setConfirmRidePanel,
+  fare,
+  selectVehicle,
+}) => {
   return (
     <div>
       <h4
@@ -24,6 +29,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel, fare }) => {
         price={fare.car}
         setConfirmRidePanel={setConfirmRidePanel}
         setVehiclePanel={setVehiclePanel}
+        selectVehicle={() => selectVehicle("car")}
       />
 
       <VehicleCard
@@ -37,6 +43,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel, fare }) => {
         price={fare.moto}
         setConfirmRidePanel={setConfirmRidePanel}
         setVehiclePanel={setVehiclePanel}
+        selectVehicle={() => selectVehicle("moto")}
       />
 
       {/* <VehicleCard
@@ -63,6 +70,7 @@ const VehiclePanel = ({ setVehiclePanel, setConfirmRidePanel, fare }) => {
         price={fare.auto}
         setConfirmRidePanel={setConfirmRidePanel}
         setVehiclePanel={setVehiclePanel}
+        selectVehicle={() => selectVehicle("auto")}
       />
     </div>
   );

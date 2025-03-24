@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
@@ -29,6 +29,7 @@ const Home = () => {
   const [vehicleFound, setVehicleFound] = useState(false);
   const [waitingForDriver, setWaitingForDriver] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [vehicleType, setVehicleType] = useState(null);
 
   const fetchSuggestions = useCallback(async (value) => {
     if (!value || value.length < 3) {
@@ -57,6 +58,8 @@ const Home = () => {
       setDestination(value);
     }
     setActiveField(field);
+    setVehicleFound(false);
+    // setConfirmRidePanel(false);
 
     // Clear any existing timer
     if (debounceTimerRef.current) {
@@ -70,7 +73,7 @@ const Home = () => {
   };
 
   // Cleanup timer on component unmount
-  useRef(() => {
+  useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
@@ -91,7 +94,9 @@ const Home = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+  };
 
+  const findTrip = async () => {
     try {
       // First get the fare
       const fareResponse = await axios.get(
@@ -103,17 +108,18 @@ const Home = () => {
         setFare(fareResponse.data);
         setVehiclePanel(true);
         setPanelOpen(false);
+        // setVehicleFound(false);
+        // setWaitingForDriver(false);
       }
     } catch (error) {
       console.error("Error fetching fare:", error);
-      // You might want to show an error message to the user here
       alert("Error fetching fare. Please try again.");
     }
   };
 
   useGSAP(() => {
     gsap.to(panelRef.current, {
-      height: panelOpen ? "75%" : "0%",
+      height: panelOpen ? "70%" : "0%",
     });
     gsap.to(panelCloseRef.current, {
       opacity: panelOpen ? 1 : 0,
@@ -144,6 +150,33 @@ const Home = () => {
     });
   }, [waitingForDriver]);
 
+  async function createRide() {
+    const response = await axios.post("/rides/create", {
+      pickup,
+      dropoff: destination,
+      vehicleType,
+    });
+
+    console.log(response.data);
+  }
+
+  // Function to reset all panels
+  const resetPanels = () => {
+    setPanelOpen(false);
+    setVehiclePanel(false);
+    setConfirmRidePanel(false);
+    setVehicleFound(false);
+    setWaitingForDriver(false);
+  };
+
+  // Update panel open handler
+  const handlePanelOpen = (field) => {
+    setPanelOpen(true);
+    setActiveField(field);
+    setVehicleFound(false);
+    // setConfirmRidePanel(false);
+  };
+
   return (
     <div className="h-screen relative overflow-hidden">
       <img
@@ -161,30 +194,25 @@ const Home = () => {
       </div>
 
       <div className="flex flex-col justify-end absolute h-screen top-0 rounded-t-2xl w-full">
-        <div className="min-h-[200px] p-5 bg-white">
+        <div className="h-[30%] p-5 bg-white relative">
           <h5
             ref={panelCloseRef}
             className="text-2xl absolute right-6 opacity-0"
-            onClick={() => setPanelOpen(false)}
+            onClick={resetPanels}
           >
             <i className="ri-arrow-down-wide-line"></i>
           </h5>
           <h4 className="text-2xl font-semibold mb-4">Find a Trip</h4>
           <form
-            onSubmit={(e) => {
-              handleFormSubmit(e);
-            }}
-            className="flex flex-col gap-3"
+            onSubmit={(e) => handleFormSubmit(e)}
+            className="flex flex-col gap-3 relative"
           >
             <input
               className="bg-[#eee] px-12 py-3 text-base rounded-lg w-full"
               type="text"
               value={pickup}
               onChange={(e) => handleInputChange(e.target.value, "pickup")}
-              onClick={() => {
-                setPanelOpen(true);
-                setActiveField("pickup");
-              }}
+              onClick={() => handlePanelOpen("pickup")}
               placeholder="Add a pick-up location"
             />
             <input
@@ -192,19 +220,17 @@ const Home = () => {
               type="text"
               value={destination}
               onChange={(e) => handleInputChange(e.target.value, "destination")}
-              onClick={() => {
-                setPanelOpen(true);
-                setActiveField("destination");
-              }}
+              onClick={() => handlePanelOpen("destination")}
               placeholder="Enter your destination"
             />
-            <button
-              type="submit"
-              className="bg-black text-white px-4 py-3 rounded-lg w-full mt-2"
-            >
-              Find Trip
-            </button>
           </form>
+          <button
+            className="bg-black text-white px-4 py-3 rounded-lg w-full mt-2"
+            disabled={!pickup || !destination}
+            onClick={findTrip}
+          >
+            Find Trip
+          </button>
         </div>
 
         <div className="h-0 px-5 bg-white" ref={panelRef}>
@@ -222,6 +248,7 @@ const Home = () => {
       >
         <VehiclePanel
           fare={fare}
+          selectVehicle={setVehicleType}
           setVehiclePanel={setVehiclePanel}
           setConfirmRidePanel={setConfirmRidePanel}
         />
@@ -229,21 +256,34 @@ const Home = () => {
       <div
         className="fixed bottom-0 z-20 w-full px-3 py-6 bg-white translate-y-full"
         ref={confirmRidePanelRef}
+        style={{ visibility: confirmRidePanel ? "visible" : "hidden" }}
       >
         <ConfirmRide
+          createRide={createRide}
+          pickup={pickup}
+          destination={destination}
+          vehicleType={vehicleType}
+          fare={fare}
           setVehicleFound={setVehicleFound}
           setConfirmRidePanel={setConfirmRidePanel}
         />
       </div>
       <div
-        className="fixed bottom-0 z-20 w-full px-3 py-6 bg-white translate-y-full"
+        className="fixed bottom-0 z-30 w-full px-3 py-6 bg-white translate-y-full pointer-events-none"
         ref={vehicleFoundRef}
+        style={{ visibility: vehicleFound ? "visible" : "hidden" }}
       >
-        <LookingForDriver setVehicleFound={setVehicleFound} />
+        <LookingForDriver
+          pickup={pickup}
+          destination={destination}
+          vehicleType={vehicleType}
+          fare={fare}
+          setVehicleFound={setVehicleFound}
+        />
       </div>
       <div
         ref={waitingForDriverRef}
-        className="fixed bottom-0 z-20 w-full px-3 py-6 bg-white"
+        className="fixed bottom-0 z-40 w-full px-3 py-6 bg-white translate-y-full"
       >
         <WaitingForDriver setWaitingForDriver={setWaitingForDriver} />
       </div>

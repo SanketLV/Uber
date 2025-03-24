@@ -1,4 +1,16 @@
-const ConfirmRide = ({ setVehicleFound, setConfirmRidePanel }) => {
+import splitAddress from "../utils/splitAdress";
+
+const ConfirmRide = ({
+  setVehicleFound,
+  setConfirmRidePanel,
+  createRide,
+  pickup,
+  destination,
+  fare,
+  vehicleType,
+}) => {
+  const pickupParts = splitAddress(pickup);
+  const destinationParts = splitAddress(destination);
   return (
     <div>
       <h4
@@ -23,10 +35,8 @@ const ConfirmRide = ({ setVehicleFound, setConfirmRidePanel }) => {
               <i className="ri-map-pin-3-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">562/11-A</h2>
-              <h4 className="text-base text-gray-600">
-                Kaikondrahalli, Bengaluru, Karnataka
-              </h4>
+              <h2 className="text-xl font-bold">{pickupParts.main}</h2>
+              <h4 className="text-base text-gray-600">{pickupParts.detail}</h4>
             </div>
           </div>
           <div className="flex flex-row items-center gap-4">
@@ -34,10 +44,9 @@ const ConfirmRide = ({ setVehicleFound, setConfirmRidePanel }) => {
               <i className="ri-square-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">Third Wave Coffee</h2>
+              <h2 className="text-xl font-bold">{destinationParts.main}</h2>
               <h4 className="text-base text-gray-600">
-                17th Cross Rd,PWD Quarters, 1st Sector, HSR Layout, Bengaluru,
-                Karnataka
+                {destinationParts.detail}
               </h4>
             </div>
           </div>
@@ -46,7 +55,7 @@ const ConfirmRide = ({ setVehicleFound, setConfirmRidePanel }) => {
               <i className="ri-bank-card-2-fill"></i>
             </h3>
             <div className="w-full py-3">
-              <h2 className="text-xl font-bold">$40</h2>
+              <h2 className="text-xl font-bold">₹{fare[vehicleType]}</h2>
               <h4 className="text-base text-gray-600">Cash</h4>
             </div>
           </div>
@@ -56,6 +65,7 @@ const ConfirmRide = ({ setVehicleFound, setConfirmRidePanel }) => {
           onClick={() => {
             setVehicleFound(true);
             setConfirmRidePanel(false);
+            createRide();
           }}
         >
           Confirm
