@@ -6,13 +6,13 @@
 
 ### Description
 
-This endpoint allows users to register by providing their email, first name, and password. Upon successful registration, a user object and an authentication token are returned.
+This endpoint allows users to register by providing their email, full name, and password. Upon successful registration, a user object and an authentication token are returned.
 
 ### Required Data
 
-- `fullname` (object)
-  - `firstname` (string, required) : Must be at least 3 characters long.
-  - `lastname` (string, optional) : Must be at least 3 characters long.
+- `fullName` (object)
+  - `firstName` (string, required) : Must be at least 3 characters long.
+  - `lastName` (string, optional) : Must be at least 3 characters long.
 - `email`: Must be a valid email address.
 - `password`: Must be at least 6 characters long.
 
@@ -21,9 +21,9 @@ This endpoint allows users to register by providing their email, first name, and
 ```json
 {
   "user": {
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com",
     "password": "hashed_password"
@@ -56,9 +56,9 @@ This endpoint allows users to log in by providing their email and password. Upon
 ```json
 {
   "user": {
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com",
     "password": "hashed_password"
@@ -86,9 +86,9 @@ This endpoint retrieves the user's profile information. It requires authenticati
 ```json
 {
   "user": {
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com"
   }
@@ -141,13 +141,13 @@ This process ensures that only authenticated users can access protected routes.
 
 ### Description
 
-This endpoint allows captains to register by providing their email, fullname, password, and vehicle details. Upon successful registration, a captain object and an authentication token are returned.
+This endpoint allows captains to register by providing their email, full name, password, and vehicle details. Upon successful registration, a captain object and an authentication token are returned.
 
 ### Required Data
 
-- `fullname` (object)
-  - `firstname` (string, required): Must be at least 3 characters long.
-  - `lastname` (string, optional): Must be at least 3 characters long.
+- `fullName` (object)
+  - `firstName` (string, required): Must be at least 3 characters long.
+  - `lastName` (string, optional): Must be at least 3 characters long.
 - `email` (string, required): Must be a valid email address.
 - `password` (string, required): Must be at least 6 characters long.
 - `vehicle` (object)
@@ -161,9 +161,9 @@ This endpoint allows captains to register by providing their email, fullname, pa
 ```json
 {
   "captain": {
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com",
     "vehicle": {
@@ -201,9 +201,9 @@ Allows captains to log in by providing their email and password. Returns a capta
 ```json
 {
   "captain": {
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com",
     "vehicle": {
@@ -236,9 +236,9 @@ Retrieves the authenticated captain's profile information. Requires authenticati
 ```json
 {
   "captain": {
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com",
     "vehicle": {
@@ -283,12 +283,12 @@ Logs the captain out by clearing the authentication token and adding it to a bla
 
 ### Description
 
-Creates a new ride by providing pickup, dropoff, and vehicle type. Requires authentication.
+Creates a new ride by providing pickup location, drop-off location, and vehicle type. Requires authentication.
 
 ### Required Data
 
-- `pickup` (string, required): Must be at least 3 characters long.
-- `dropoff` (string, required): Must be at least 3 characters long.
+- `pickupLocation` (string, required): Must be at least 3 characters long.
+- `dropOffLocation` (string, required): Must be at least 3 characters long.
 - `vehicleType` (string, required): Must be one of the following values: `car`, `moto`, `auto`.
 
 ### Response Example
@@ -296,8 +296,8 @@ Creates a new ride by providing pickup, dropoff, and vehicle type. Requires auth
 ```json
 {
   "ride": {
-    "pickup": "Location A",
-    "dropoff": "Location B",
+    "pickupLocation": "Location A",
+    "dropOffLocation": "Location B",
     "vehicleType": "car",
     "fare": 50
   },
@@ -316,12 +316,12 @@ Creates a new ride by providing pickup, dropoff, and vehicle type. Requires auth
 
 ### Description
 
-Retrieves the fare for a ride based on pickup and dropoff locations. Requires authentication.
+Retrieves the fare for a ride based on pickup location and drop-off location. Requires authentication.
 
 ### Required Data
 
-- `pickup` (string, required): Must be at least 3 characters long.
-- `dropoff` (string, required): Must be at least 3 characters long.
+- `pickupLocation` (string, required): Must be at least 3 characters long.
+- `dropOffLocation` (string, required): Must be at least 3 characters long.
 
 ### Response Example
 
@@ -337,6 +337,103 @@ Retrieves the fare for a ride based on pickup and dropoff locations. Requires au
 
 - `200`: Fare retrieved successfully.
 - `400`: Bad request (validation errors).
+
+## Endpoint: `/rides/confirm`
+
+- **Method**: `POST`
+
+### Description
+
+Allows a captain to confirm and accept a ride request. Requires captain authentication.
+
+### Required Data
+
+- `rideId` (string, required): Must be a valid MongoDB ID.
+
+### Response Example
+
+```json
+{
+  "message": "Ride confirmed successfully",
+  "ride": {
+    "id": "ride_id",
+    "status": "confirmed",
+    "captainId": "captain_id"
+  }
+}
+```
+
+### Status Codes
+
+- `200`: Ride confirmed successfully.
+- `400`: Bad request (invalid ride ID).
+- `401`: Unauthorized (captain authentication required).
+- `404`: Ride not found.
+
+## Endpoint: `/rides/start-ride`
+
+- **Method**: `GET`
+
+### Description
+
+Allows a captain to start a confirmed ride by providing the ride ID and OTP. Requires captain authentication.
+
+### Required Data
+
+- `rideId` (string, required): Must be a valid MongoDB ID.
+- `otp` (string, required): Must be a 6-digit string.
+
+### Response Example
+
+```json
+{
+  "message": "Ride started successfully",
+  "ride": {
+    "id": "ride_id",
+    "status": "in_progress",
+    "startTime": "timestamp"
+  }
+}
+```
+
+### Status Codes
+
+- `200`: Ride started successfully.
+- `400`: Bad request (invalid ride ID or OTP).
+- `401`: Unauthorized (captain authentication required).
+- `404`: Ride not found.
+
+## Endpoint: `/rides/finish-ride`
+
+- **Method**: `POST`
+
+### Description
+
+Allows a captain to finish an ongoing ride. Requires captain authentication.
+
+### Required Data
+
+- `rideId` (string, required): Must be a valid MongoDB ID.
+
+### Response Example
+
+```json
+{
+  "message": "Ride finished successfully",
+  "ride": {
+    "id": "ride_id",
+    "status": "completed",
+    "endTime": "timestamp"
+  }
+}
+```
+
+### Status Codes
+
+- `200`: Ride finished successfully.
+- `400`: Bad request (invalid ride ID).
+- `401`: Unauthorized (captain authentication required).
+- `404`: Ride not found.
 
 ## Endpoint: `/maps/get-coordinate`
 
