@@ -1,6 +1,23 @@
-import { Link } from "react-router-dom";
+import splitAddress from "../utils/splitAdress";
+import axios from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 
-const FinishRide = ({ setFinishRidePanel }) => {
+const FinishRide = ({ setFinishRidePanel, rideData }) => {
+  const pickupParts = splitAddress(rideData?.pickup);
+  const destinationParts = splitAddress(rideData?.dropoff);
+  const navigate = useNavigate();
+
+  const handleFinishRide = async () => {
+    const response = await axios.post("/rides/finish-ride", {
+      rideId: rideData._id,
+    });
+
+    if (response.status === 200) {
+      setFinishRidePanel(false);
+      navigate("/captain-home");
+    }
+  };
+
   return (
     <div className="">
       <h4
@@ -20,7 +37,9 @@ const FinishRide = ({ setFinishRidePanel }) => {
             alt=""
             className="h-12 w-12 rounded-full object-cover"
           />
-          <h2 className="text-xl font-medium">Swati Sharma</h2>
+          <h2 className="text-xl font-medium">
+            {rideData?.user?.fullname?.firstname}
+          </h2>
         </div>
         <h5 className="text-lg font-semibold">2.5 KM</h5>
       </div>
@@ -32,10 +51,8 @@ const FinishRide = ({ setFinishRidePanel }) => {
               <i className="ri-map-pin-3-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">562/11-A</h2>
-              <h4 className="text-base text-gray-600">
-                Kaikondrahalli, Bengaluru, Karnataka
-              </h4>
+              <h2 className="text-xl font-bold">{pickupParts?.main}</h2>
+              <h4 className="text-base text-gray-600">{pickupParts?.detail}</h4>
             </div>
           </div>
           <div className="flex flex-row items-center gap-4">
@@ -43,10 +60,9 @@ const FinishRide = ({ setFinishRidePanel }) => {
               <i className="ri-square-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">Third Wave Coffee</h2>
+              <h2 className="text-xl font-bold">{destinationParts?.main}</h2>
               <h4 className="text-base text-gray-600">
-                17th Cross Rd,PWD Quarters, 1st Sector, HSR Layout, Bengaluru,
-                Karnataka
+                {destinationParts?.detail}
               </h4>
             </div>
           </div>
@@ -55,18 +71,18 @@ const FinishRide = ({ setFinishRidePanel }) => {
               <i className="ri-bank-card-2-fill"></i>
             </h3>
             <div className="w-full py-3">
-              <h2 className="text-xl font-bold">$40</h2>
+              <h2 className="text-xl font-bold">₹{rideData?.fare}</h2>
               <h4 className="text-base text-gray-600">Cash</h4>
             </div>
           </div>
         </div>
         <div className="w-full flex">
-          <Link
-            to={"/captain-home"}
+          <button
+            onClick={handleFinishRide}
             className="w-full bg-green-600 text-white text-center p-4 rounded-xl text-lg font-semibold"
           >
             Finish Ride
-          </Link>
+          </button>
         </div>
       </div>
     </div>

@@ -1,4 +1,16 @@
-const RidePopUp = ({ setRidePopupPanel, setConfirmRidePopupPanel }) => {
+import splitAddress from "../utils/splitAdress";
+
+const RidePopUp = ({
+  setRidePopupPanel,
+  setConfirmRidePopupPanel,
+  ride,
+  confirmRide,
+}) => {
+  console.log(ride);
+
+  const pickupParts = splitAddress(ride?.pickup);
+  const destinationParts = splitAddress(ride?.dropoff);
+
   return (
     <div>
       <h4
@@ -18,7 +30,11 @@ const RidePopUp = ({ setRidePopupPanel, setConfirmRidePopupPanel }) => {
             alt=""
             className="h-12 w-12 rounded-full object-cover"
           />
-          <h2 className="text-xl font-medium">Swati Sharma</h2>
+          <h2 className="text-xl font-medium">
+            {ride?.user?.fullname?.firstname +
+              " " +
+              ride?.user?.fullname?.lastname}
+          </h2>
         </div>
         <h5 className="text-lg font-semibold">2.5 KM</h5>
       </div>
@@ -30,10 +46,8 @@ const RidePopUp = ({ setRidePopupPanel, setConfirmRidePopupPanel }) => {
               <i className="ri-map-pin-3-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">562/11-A</h2>
-              <h4 className="text-base text-gray-600">
-                Kaikondrahalli, Bengaluru, Karnataka
-              </h4>
+              <h2 className="text-xl font-bold">{pickupParts?.main}</h2>
+              <h4 className="text-base text-gray-600">{pickupParts?.detail}</h4>
             </div>
           </div>
           <div className="flex flex-row items-center gap-4">
@@ -41,10 +55,9 @@ const RidePopUp = ({ setRidePopupPanel, setConfirmRidePopupPanel }) => {
               <i className="ri-square-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">Third Wave Coffee</h2>
+              <h2 className="text-xl font-bold">{destinationParts?.main}</h2>
               <h4 className="text-base text-gray-600">
-                17th Cross Rd,PWD Quarters, 1st Sector, HSR Layout, Bengaluru,
-                Karnataka
+                {destinationParts?.detail}
               </h4>
             </div>
           </div>
@@ -53,7 +66,7 @@ const RidePopUp = ({ setRidePopupPanel, setConfirmRidePopupPanel }) => {
               <i className="ri-bank-card-2-fill"></i>
             </h3>
             <div className="w-full py-3">
-              <h2 className="text-xl font-bold">$40</h2>
+              <h2 className="text-xl font-bold">₹{ride?.fare}</h2>
               <h4 className="text-base text-gray-600">Cash</h4>
             </div>
           </div>
@@ -63,6 +76,7 @@ const RidePopUp = ({ setRidePopupPanel, setConfirmRidePopupPanel }) => {
             className="w-full bg-green-600 text-white p-4 rounded-xl text-lg font-semibold"
             onClick={() => {
               setConfirmRidePopupPanel(true);
+              confirmRide();
             }}
           >
             Accept

@@ -75,3 +75,88 @@ module.exports.createRide = async ({ user, pickup, dropoff, vehicleType }) => {
 
   return ride;
 };
+
+module.exports.confirmRide = async (rideId, captainId) => {
+  if (!rideId) {
+    throw new Error("Ride id is required");
+  }
+
+  await Ride.findByIdAndUpdate(rideId, {
+    status: "accepted",
+    captain: captainId,
+  });
+
+  const ride = await Ride.findById(rideId)
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+
+  return ride;
+};
+
+module.exports.startRide = async (rideId, otp, captainId) => {
+  if (!rideId || !otp) {
+    throw new Error("Ride id and OTP are required");
+  }
+
+  const ride = await Ride.findOne({
+    _id: rideId,
+  })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+
+  if (ride.status !== "accepted") {
+    throw new Error("Ride not accepted");
+  }
+
+  if (ride.otp !== otp) {
+    throw new Error("Invalid OTP");
+  }
+
+  await Ride.findOneAndUpdate(
+    {
+      _id: rideId,
+    },
+    {
+      status: "ongoing",
+      captain: captainId,
+    }
+  );
+
+  return ride;
+};
+
+module.exports.finishRide = async (rideId, captainId) => {
+  if (!rideId) {
+    throw new Error("Ride id is required");
+  }
+
+  const ride = await Ride.findOne({
+    _id: rideId,
+    captain: captainId,
+  })
+    .populate("user")
+    .populate("captain")
+    .select("+otp");
+
+  if (!ride) {
+    throw new Error("Ride not found");
+  }
+
+  if (ride.status !== "ongoing") {
+    throw new Error("Ride not ongoing");
+  }
+
+  await Ride.findOneAndUpdate({ _id: rideId }, { status: "completed" });
+
+  return ride;
+};

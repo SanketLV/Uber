@@ -1,6 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import splitAddress from "../utils/splitAdress";
+import { useContext } from "react";
+import { SocketContext } from "../context/SocketContext";
+import LiveTracking from "../components/LiveTracking";
 
 const Riding = () => {
+  const location = useLocation();
+  const rideData = location.state?.ride;
+  const { socket } = useContext(SocketContext);
+  const navigate = useNavigate();
+
+  socket.on("ride-finished", () => {
+    navigate("/home");
+  });
+
+  const destinationParts = splitAddress(rideData?.dropoff);
+
   return (
     <div className="h-screen">
       <Link
@@ -9,15 +24,16 @@ const Riding = () => {
       >
         <i className="ri-home-5-line text-lg font-medium"></i>
       </Link>
-      <div className="h-1/2">
-        <img
+      <div className="h-[60%]">
+        {/* <img
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
           alt="map"
           className="w-full h-full object-cover"
-        />
+        /> */}
+        <LiveTracking />
       </div>
 
-      <div className="h-1/2 p-2">
+      <div className="h-[40%] p-2">
         <div className="flex items-center justify-between">
           <img
             className="h-20"
@@ -25,9 +41,13 @@ const Riding = () => {
             alt=""
           />
           <div className="text-right">
-            <h2 className="text-lg font-medium">Sanket</h2>
-            <h4 className="text-xl font-semibold -my-1">GJ 16 AB 1234</h4>
-            <p className="text-sm text-gray-600">Hyundai Creta</p>
+            <h2 className="text-lg font-medium capitalize">
+              {rideData?.captain?.fullname?.firstname}
+            </h2>
+            <h4 className="text-xl font-semibold -my-1">
+              {rideData?.captain?.vehicle?.plate}
+            </h4>
+            <p className="text-sm text-gray-600">Maruti Suzuki Alto</p>
           </div>
         </div>
         <div className="flex flex-col items-center gap-4">
@@ -37,10 +57,9 @@ const Riding = () => {
                 <i className="ri-square-fill"></i>
               </h3>
               <div className="w-full py-3 border-b">
-                <h2 className="text-xl font-bold">Third Wave Coffee</h2>
+                <h2 className="text-xl font-bold">{destinationParts?.main}</h2>
                 <h4 className="text-base text-gray-600">
-                  17th Cross Rd,PWD Quarters, 1st Sector, HSR Layout, Bengaluru,
-                  Karnataka
+                  {destinationParts?.detail}
                 </h4>
               </div>
             </div>
@@ -49,7 +68,7 @@ const Riding = () => {
                 <i className="ri-bank-card-2-fill"></i>
               </h3>
               <div className="w-full py-3">
-                <h2 className="text-xl font-bold">$40</h2>
+                <h2 className="text-xl font-bold">₹{rideData?.fare}</h2>
                 <h4 className="text-base text-gray-600">Cash</h4>
               </div>
             </div>

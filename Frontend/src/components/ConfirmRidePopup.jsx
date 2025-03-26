@@ -1,12 +1,35 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import splitAddress from "../utils/splitAdress";
+import axios from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 
-const ConfirmRidePopup = ({ setConfirmRidePopupPanel, setRidePopupPanel }) => {
+const ConfirmRidePopup = ({
+  setConfirmRidePopupPanel,
+  setRidePopupPanel,
+  ride,
+}) => {
   const [otp, setOtp] = useState("");
+  const navigate = useNavigate();
 
-  const submitHandler = (e) => {
+  const pickupParts = splitAddress(ride?.pickup);
+  const destinationParts = splitAddress(ride?.dropoff);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
     console.log("Ride Confirmed");
+
+    const response = await axios.get("/rides/start-ride", {
+      params: {
+        rideId: ride._id,
+        otp: otp,
+      },
+    });
+
+    if (response.status === 200) {
+      setConfirmRidePopupPanel(false);
+      setRidePopupPanel(false);
+      navigate("/captain-riding", { state: { ride } });
+    }
   };
 
   return (
@@ -30,7 +53,9 @@ const ConfirmRidePopup = ({ setConfirmRidePopupPanel, setRidePopupPanel }) => {
             alt=""
             className="h-12 w-12 rounded-full object-cover"
           />
-          <h2 className="text-xl font-medium">Swati Sharma</h2>
+          <h2 className="text-xl font-medium capitalize">
+            {ride?.user?.fullname?.firstname}
+          </h2>
         </div>
         <h5 className="text-lg font-semibold">2.5 KM</h5>
       </div>
@@ -42,10 +67,8 @@ const ConfirmRidePopup = ({ setConfirmRidePopupPanel, setRidePopupPanel }) => {
               <i className="ri-map-pin-3-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">562/11-A</h2>
-              <h4 className="text-base text-gray-600">
-                Kaikondrahalli, Bengaluru, Karnataka
-              </h4>
+              <h2 className="text-xl font-bold">{pickupParts?.main}</h2>
+              <h4 className="text-base text-gray-600">{pickupParts?.detail}</h4>
             </div>
           </div>
           <div className="flex flex-row items-center gap-4">
@@ -53,10 +76,9 @@ const ConfirmRidePopup = ({ setConfirmRidePopupPanel, setRidePopupPanel }) => {
               <i className="ri-square-fill"></i>
             </h3>
             <div className="w-full py-3 border-b">
-              <h2 className="text-xl font-bold">Third Wave Coffee</h2>
+              <h2 className="text-xl font-bold">{destinationParts?.main}</h2>
               <h4 className="text-base text-gray-600">
-                17th Cross Rd,PWD Quarters, 1st Sector, HSR Layout, Bengaluru,
-                Karnataka
+                {destinationParts?.detail}
               </h4>
             </div>
           </div>
@@ -65,7 +87,7 @@ const ConfirmRidePopup = ({ setConfirmRidePopupPanel, setRidePopupPanel }) => {
               <i className="ri-bank-card-2-fill"></i>
             </h3>
             <div className="w-full py-3">
-              <h2 className="text-xl font-bold">$40</h2>
+              <h2 className="text-xl font-bold">₹{ride?.fare}</h2>
               <h4 className="text-base text-gray-600">Cash</h4>
             </div>
           </div>
@@ -87,12 +109,9 @@ const ConfirmRidePopup = ({ setConfirmRidePopupPanel, setRidePopupPanel }) => {
               required
             />
             <div className="flex items-center gap-2">
-              <Link
-                to={"/captain-riding"}
-                className="w-1/2 bg-green-600 text-white text-center p-4 rounded-xl text-lg font-semibold"
-              >
+              <button className="w-1/2 bg-green-600 text-white text-center p-4 rounded-xl text-lg font-semibold">
                 Confirm
-              </Link>
+              </button>
               <button
                 className="w-1/2 bg-red-600 text-white p-4 rounded-xl text-lg font-semibold"
                 onClick={() => {
